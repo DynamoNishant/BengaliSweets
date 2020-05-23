@@ -11,15 +11,26 @@ def peepsmenu(type):
 
     print(f"\t\t\t\t\t\t\t\t {type} MENU\n\n")
 
-    print(f"\t\t1. Enter {type} data\n\t\t2. Display {type} data\n\t\t3. Search {type} data\n\t\t4. Delete {type} data\n\t\t5. GO BACK!!!")
+    print(
+        f"\t\t1. Enter {type} data\n\t\t2. Display {type} data\n\t\t3. Search {type} data\n\t\t4. Delete {type} data\n\t\t5. GO BACK!!!")
 
-    with open(FILENAME, 'wb') as file:
-        entryformat = {"Name": ('ID', 'Date Added', 'Age')}
-        filesize = os.path.getsize(FILENAME)
-        if filesize == 0: # fills in colnames if the file is empty
-            pickle.dump(entryformat,file)
+    # with open(FILENAME, 'wb') as file:
+    #     entryformat = {"Name": ('ID', 'Date Added', 'Age')}
+    #     filesize = os.path.getsize(FILENAME)
+    #     if filesize == 0:  # fills in colnames if the file is empty
+    #         pickle.dump(entryformat, file)
+    entryformat = {"Name": ('ID', 'Date Added', 'Age')}
+    if not os.path.exists(FILENAME):
+        # Creating the file
+        fh = open(FILENAME, 'wb')
+        pickle.dump(entryformat, fh)
+        fh.close()
 
-
+    # filesize = os.stat(FILENAME).st_size
+    # print("Size before :", filesize)
+    # if filesize == 0:
+    #     print("empty file")
+    #print("Size of file :", os.stat(FILENAME).st_size)
 
     opt = input(">> ")
 
@@ -29,7 +40,7 @@ def peepsmenu(type):
 
     elif opt == '2':
         mainmenu.procs()
-        shower(type) # YES, SHOWER
+        shower(type)  # YES, SHOWER
 
     elif opt == '3':
         mainmenu.procs()
@@ -42,10 +53,11 @@ def peepsmenu(type):
     elif opt == '5':
         mainmenu.main()
 
+
 def saver(type):
     print("<>"*20, f"{type} DATA ENTRY MODULE", "<>"*20)
-
-    file = open(FILENAME, 'wb')
+    # print(FILENAME)
+    file = open(FILENAME, 'ab')
 
     again = 'y'
     tempdata = dict()
@@ -56,26 +68,38 @@ def saver(type):
         age = input(f"Enter the age of {type} ")
 
         tempdata[name] = (id, date_add, age)
-
+        print(tempdata)
         pickle.dump(tempdata, file)
         tempdata.clear()
 
         again = input("Enter another data? (y/n)").lower()
+
     file.close()
 
     peepsmenu(type)
 
 
-
 def shower(type):
-    print("*"*25, "SHOWER OF DATA INCOMING" ,"*"*25)
+    print("*"*25, "SHOWER OF DATA INCOMING", "*"*25)
 
+    # with open(FILENAME, 'rb') as file:
+    #     data = pickle.load(file)
+    #     print(data)
+
+    # print(FILENAME)
     with open(FILENAME, 'rb') as file:
-        data = pickle.load(file)
-        print(data)
-        peepsmenu(type)
+        while True:
+            try:
+                print(pickle.load(file))
+            except EOFError:
+                break
+
+    peepsmenu(type)
+
 
 def finder(type):
     pass
+
+
 def remover(type):
     pass
